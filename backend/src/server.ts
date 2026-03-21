@@ -73,13 +73,25 @@ res.json({ message: 'Bienvenue admin' });
 })
 
 
-// Chargement du certificat et clé générés par mkcert (étape 0)
-const key = fs.readFileSync('./certs/localhost-key.pem')
-const cert = fs.readFileSync('./certs/localhost.pem')
+// Lancement du serveur (HTTPS en local, HTTP en production/Render)
+const PORT = process.env.PORT || 4000;
+const isProd = process.env.NODE_ENV === 'production';
 
-// Lancement du serveur HTTPS
-https.createServer({ key, cert }, app).listen(4000, () => {
-    console.log('👍 Serveur API démarré sur https://localhost:4000')
-})
+const keyPath = './certs/localhost-key.pem';
+const certPath = './certs/localhost.pem';
+
+if (!isProd && fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+    // Mode local avec SSL (mkcert)
+    const key = fs.readFileSync(keyPath);
+    const cert = fs.readFileSync(certPath);
+    https.createServer({ key, cert }, app).listen(PORT, () => {
+        console.log(`👍 Serveur HTTPS démarré sur https://localhost:${PORT}`);
+    });
+} else {
+    // Mode Production (Render) ou certificates manquants
+    app.listen(PORT, () => {
+        console.log(`🚀 Serveur HTTP démarré sur le port ${PORT} ${isProd ? '(Mode Production)' : '(Certs manquants)'}`);
+    });
+}
 
 await ensureAdmin()
