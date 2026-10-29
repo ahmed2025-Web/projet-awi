@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import pool from '../db/database.js';
-import { requireRole, requireActivatedAccount, requirePermission } from '../middleware/roles.js';
+import { requireActivatedAccount, requirePermission } from '../middleware/roles.js';
 
 const router = Router()
 
@@ -46,7 +46,7 @@ router.get('/courant',requireActivatedAccount(), requirePermission('festivals', 
 // -----------------------------
 // Détail d’un festival
 // -----------------------------
-router.get('/:id', requireActivatedAccount(), requirePermission('festivals', 'viewAll'), async (req, res) => {
+router.get('/:id', requireActivatedAccount(), requirePermission('festivals', 'viewCurrent'), async (req, res) => {
     const festivalId = req.params.id;
     try {
         const result = await pool.query(`
@@ -151,7 +151,13 @@ router.patch('/:id',requireActivatedAccount(), requirePermission('festivals', 'u
           return res.status(404).json({ error: 'Festival non trouvé' });
         }
 
-        res.json(result.rows[0]);
+        // Retourner les données complètes de la vue dashboard
+        const dashboardResult = await pool.query(
+          `SELECT * FROM vue_festivals_dashboard WHERE id = $1`,
+          [id]
+        );
+
+        res.json(dashboardResult.rows[0] || result.rows[0]);
       } catch (error: any) {
         if (error.code === '23505') {
           return res.status(400).json({ error: 'Ce nom de festival existe déjà' });
@@ -187,6 +193,53 @@ router.patch('/:id',requireActivatedAccount(), requirePermission('festivals', 'u
       }
     }
   );
+
+// -----------------------------
+// Vérifier si un festival peut être supprimé
+// -----------------------------
+router.get('/:id/can-delete', requireActivatedAccount(), requirePermission('festivals', 'delete'), async (req, res) => {
+    const festivalId = req.params.id;
+    try {
+        // Vérifier les zones plan
+        const zonesPlanResult = await pool.query(
+            `SELECT COUNT(*) as count FROM zones_plan WHERE festival_id = $1`,
+            [festivalId]
+        );
+        const hasZonesPlan = parseInt(zonesPlanResult.rows[0].count) > 0;
+
+        // Vérifier les réservations
+        const reservationsResult = await pool.query(
+            `SELECT COUNT(*) as count FROM reservations WHERE festival_id = $1`,
+            [festivalId]
+        );
+        const hasReservations = parseInt(reservationsResult.rows[0].count) > 0;
+
+        // Vérifier les zones tarifaires
+        const zonesTarifairesResult = await pool.query(
+            `SELECT COUNT(*) as count FROM zones_tarifaires WHERE festival_id = $1`,
+            [festivalId]
+        );
+        const hasZonesTarifaires = parseInt(zonesTarifairesResult.rows[0].count) > 0;
+
+        // Générer le message d'erreur
+        const reasons = [];
+        if (hasZonesPlan) reasons.push('zones plan');
+        if (hasReservations) reasons.push('réservations');
+        if (hasZonesTarifaires) reasons.push('zones tarifaires');
+
+        if (reasons.length > 0) {
+            return res.json({ 
+                canDelete: false, 
+                reason: `Ce festival contient des ${reasons.join(', ')} non-vides` 
+            });
+        }
+
+        res.json({ canDelete: true });
+    } catch (error) {
+        console.error('Erreur vérification festival:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
 
 // -----------------------------
 // DELETE : Supprimer un festival

@@ -62,17 +62,16 @@
           </div>
         </div>
       </div>
-
-      <div class="stat-item">
-        <mat-icon>euro</mat-icon>
-        <div>
-          <div class="stat-label">Facturé</div>
-          <div class="stat-value">
-            {{ (festival()?.montant_total_factures ?? 0) | currency:'EUR' }}
-          </div>
-        </div>
-      </div>
     </div>
+
+    @if (showZonesTarifaires() && festival()) {
+      <app-zones-tarifaires-list
+        [festivalId]="festival()!.id"
+        [canManage]="canManageZones()"
+        (zonesChanged)="zonesChanged.emit()">
+      </app-zones-tarifaires-list>
+    }
+
 
     @if (showStocks()) {
       <div class="stocks">
@@ -89,11 +88,30 @@
   </mat-card-content>
 
   <mat-card-actions align="end">
+    
+    @if (canViewReservations()) {
+      <button 
+        mat-button 
+        color="primary"
+        [routerLink]="['/festivals', festival()!.id, 'reservations']">
+        <mat-icon>assignment</mat-icon>
+        Réservations
+      </button>
+    }
 
-    @if (!festival()?.est_courant) {
+    @if (canViewZonesPlan()) {
+      <button 
+        mat-button 
+        color="accent" 
+        [routerLink]="['/festivals', festival()!.id, 'zones-plan']">
+        <mat-icon>map</mat-icon>
+        Plan & Placement
+      </button>
+    }
+
+    @if (!festival()?.est_courant && canSetCourant()) {
       <button mat-button color="primary" (click)="setCourant.emit(festival()!.id)">
-        
-        Sélectionner
+        Set-Current
       </button>
     }
 

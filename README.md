@@ -1,93 +1,317 @@
-# projet AWI- Vincenzo - Caroline -Ahmed amine
+#  Festivals de Jeux - Application de Gestion
 
+## C'est quoi cette application?
 
+Une plateforme complète pour organiser et gérer un festival de jeux de société. Depuis la création du festival, la mise en place des tarifs, jusqu'à la gestion des réservations des éditeurs et la génération des factures. C'est l'outil idéal pour un organisateur de festival qui a besoin de tout gérer au même endroit.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+##  Lancer l'application en local
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Prérequis
+- Docker et Docker Compose installés sur votre ordinateur
+- Les ports 8080, 4000, 5432 doivent être libres
 
-## Add your files
+### Étapes pour démarrer
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+**1. Préparer le projet**
+```bash
+git checkout ahmed
 ```
-cd existing_repo
-git remote add origin https://gitlab.polytech.umontpellier.fr/ahmed-amine.el-amri/projet-awi-vincenzo-caroline-ahmed-amine.git
-git branch -M main
-git push -uf origin main
+
+**2. Lancer l'application**
+```bash
+docker compose -f docker-compose.dev.yml down -v
+
+docker compose -f docker-compose.dev.yml up --build
 ```
 
-## Integrate with your tools
+### Accéder à l'application
 
-- [ ] [Set up project integrations](https://gitlab.polytech.umontpellier.fr/ahmed-amine.el-amri/projet-awi-vincenzo-caroline-ahmed-amine/-/settings/integrations)
+Une fois lancée, ouvrez dans votre navigateur :
+- **L'application** : https://localhost:8080
+- **Les API** : https://localhost:4000/api
+- **Gérer la base de données** : http://localhost:8081 (Adminer)
+- identifiants pour adminer : 
+Utilisateur	 : secureapp
+Mot de passe : secureapp
+Base de données : secureapp
 
-## Collaborate with your team
+### Se connecter
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Utilisez ces identifiants par défaut :
+```
+Login: admin
+Mot de passe: admin
+```
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
+## Accéder à l'application déployée (sur la VM)
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+L'application est déployée sur une **machine virtuelle (VM)** configurée avec Docker. Cette VM est accessible depuis le réseau de l'école ou via VPN de Polytech.
 
-***
+### URL d'accès
 
-# Editing this README
+- **Application** : https://162.38.111.34:8080/login
+- **Gérer la base de données** : http://162.38.111.34:8081 (Adminer)
+  - Utilisateur : `secureapp`
+  - Mot de passe : `secureapp`
+  - Base de données : `secureapp`
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Déploiement sur la VM
 
-## Suggestions for a good README
+L'application est lancée via Docker Compose en mode production:
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
 
-## Name
-Choose a self-explaining name for your project.
+Cette configuration configure:
+- **Frontend** (Angular + Nginx) sur le port 8080
+- **Backend** (Node.js + Express) sur le port 4000
+- **Base de données** (PostgreSQL) sur le port 5432
+- **Adminer** (gestion DB) sur le port 8081
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Les containers redémarrent automatiquement en cas d'arrêt grâce à `restart: unless-stopped`.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+---
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## Comment ça marche? 
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### 1. La page d'accueil
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Quand vous vous connectez, vous arrivez sur la page d'accueil. Vous voyez:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+À gauche, il y a un **menu latéral** avec tous les accès aux différentes sections de l'app.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### 2. Créer un festival
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+**Où aller** : Sidebar → Festivals → Cliquer sur "Créer"
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+**Ce qu'on fait** :
+- Vous donnez un **nom** au festival (ex: "Festival Ludis 2026")
+- Vous indiquez le **nombre total de tables disponibles** (ex: 100)
+- Vous définissez la **date de début** et la **date de fin** du festival
+- Vous ajoutez une **description** (optionnelle)
+- Vous remplissez les **stocks de mobilier** :
+  - Tables standard, Tables grandes, Tables mairie
+  - Chaises standard, Chaises mairie
+- Vous indiquez le **prix d'une prise électrique** (ex: 5€)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+**Après la création** :
+- Le festival apparaît automatiquement en premier (marqué avec une étoile ⭐ "courant")
+- Les anciens festivals ne sont plus "courants"
+- Vous voyez le nouveau festival sur la page vue publique (si vous etes visiteur ou benevole)
 
-## License
-For open source projects, say how it is licensed.
+**Essayer de supprimer un festival** : Si vous créez d'autres réservations ou zones, vous ne pourrez plus le supprimer (l'app refuse pour éviter de perdre des données)
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### 3. Créer des zones tarifaires (les différents prix)
+
+**Où aller** : Dans le détail d'un festival → Bouton "Créer zone tarifaires"
+
+**Ce qu'on fait** :
+- Vous donnez un **nom** à la zone (ex: "Premium", "Standard", "Budget", ...)
+- Vous dites **combien de tables** cette zone contient
+- Vous mettez le **prix par table** (ex: 50€ par table)
+- Le **prix au m²** se calcule automatiquement
+
+**Important** : La somme de toutes les zones ne peut pas dépasser le total du festival!
+- Si le festival a 100 tables et vous créez une zone avec 50 tables, vous pouvez créer une autre avec max 50 tables.
+- Si vous essayez de créer plus, l'app refuse et dit combien il reste disponible.
+
+### 4. Créer une réservation 
+
+**Où aller** : Cliquez sur "Festivals" dans la Sidebar → Trouvez le festival qui vous intéresse → Cliquez sur le bouton "Réservations" de la carte → Cliquez sur le bouton "Nouvelle Réservation"
+
+**Ce qu'on remplit dans le formulaire** :
+- **Réservant** : Sélectionnez qui réserve (un éditeur, association, etc.)
+- **Nombre de prises électriques** : Combien de prises électriques ils veulent (chacune coûte le prix du festival)
+- **Viendra animer** : Cochez si le réservant va venir animer ses jeux sur place
+- **Notes** : Vous pouvez ajouter des notes internes (optionnel)
+- **Tables réservées par zone** : Pour chaque zone tarifaire (Premium, Standard, etc.), indiquez combien de tables ils veulent
+- Le prix se **calcule automatiquement**
+Vous pouvez ajouter plusieurs zones pour la même réservation.
+
+**Après création** :
+- La réservation apparaît avec l'état "pas contacté"
+- Vous pouvez maintenant ajouter ou modifier les informations de la réservation
+
+
+### 5. Appliquer des remises (optionnel)
+
+**Dans la réservation** : Deux champs pour les remises
+
+Vous pouvez appliquer jusqu'à deux types de réductions :
+
+**Remise montant** : Une réduction fixe en euros
+
+**Remise tables** : Un pourcentage sur les tables seulement
+
+
+### 6. Ajouter des jeux à la réservation
+
+**Dans le détail** : Bouton "Ajouter un jeu"
+
+**Ce qu'on fait** :
+- Vous **choisissez un jeu** dans la liste (ex: Catan, Ticket to Ride)
+- Le jeu s'ajoute à la réservation
+- Vous voyez le **statut du jeu** : "Jeux non reçus" et vous pouvez le cocher pour qu'il soit recu par ex 
+
+
+### 7. Générer la facture 
+
+**Dans le détail de la réservation** : Bouton "Générer facture"
+
+**Qu'il se passe** :
+- vous voyez : Tables + Prises - Remises = Montant final
+- vous cliquez sur "Générer"
+
+**Après génération** :
+- Une **facture unique** est créée avec un numéro (FAC-20260120-00001)
+- La facture est marquée "non payé"
+- **Important** : Tu ne peux pas créer deux factures pour la même réservation! par contre on peut la modifier si on modifie les lignes de paiement
+
+
+### 10. Marquer la facture comme payée
+
+**Dans le détail de la réservation** : Section "Workflow" → Bouton "Payer"
+
+**Qu'on fait** :
+- Vous cliquez pour dire que le client a payé
+- La facture passe de "non payé" à "payé" et donc on peut ni la modifier ou la supprimer (sauf si on reviens a l'etat non payé )
+- La date de paiement est enregistrée
+
+### 11. Organiser le plan et placer les jeux (zones du plan)
+
+**Où aller** : Cliquez sur "Festivals" dans la Sidebar → Trouvez votre festival → Cliquez sur le bouton "Plan & Placement" → Vous arrivez sur la page de gestion des zones du plan
+
+**Créer une zone du plan** :
+- Cliquez sur le bouton "Nouvelle Zone Plan" en haut de la page
+- Vous donnez un **nom** à la zone (ex: "Allée A", "Espace Jeunesse", "Zone VIP")
+- Vous indiquez le **nombre de tables disponibles** dans cette zone 
+- Cliquez "Créer"
+
+**Placer les jeux dans les zones** :
+- Sur chaque zone, vous voyez un bouton "Placer un jeu"
+- Cliquez dessus → sélectionnez le jeu que vous voulez placer
+- Le jeu s'ajoute à la zone et vous voyez le **taux d'occupation** (% de tables utilisées)
+- Les jeux sont groupés par **réservation** pour voir qui a posé quoi
+- on peut placer les jeux de l'onglet placer jeux egalement.
+
+**Vue d'ensemble** :
+- L'onglet "Vue d'ensemble" montre toutes les zones avec les jeux placés
+- L'onglet "Stocks de matériel" affiche les tables et chaises restantes du festival
+
+### 12. Gérer les éditeurs
+
+**Où aller** : Cliquez sur "Éditeurs" dans la Sidebar
+
+**Créer un éditeur** :
+- Vous donnez le **nom** de l'éditeur 
+- Vous pouvez ajouter des **contacts** pour l'éditeur:
+  - **Nom** du contact
+  - **Email** (optionnel)
+  - **Téléphone** (optionnel)
+  - **Rôle / fonction** (ex: "Responsable commercial")
+- Vous pouvez ajouter plusieurs contacts
+
+**Voir et modifier un éditeur** :
+- Cliquez sur un éditeur dans la liste
+- Vous voyez ses **jeux** et ses **contacts**
+- Vous pouvez modifier ou supprimer l'éditeur
+
+### 12B. Gérer les jeux
+
+**Où aller** : Cliquez sur "Jeux" dans la Sidebar
+
+**Créer un jeu** :
+- Cliquez sur "+ Ajouter un jeu"
+- Vous remplissez:
+  - **Nom du jeu** 
+  - **Éditeur** - **obligatoire**
+  - **Type de jeu** (ex: "Stratégie", "Coopératif")
+  - **Âge minimum et maximum**
+  - **Nombre minimum et maximum de joueurs**
+  - **Durée moyenne** (en minutes)
+  - **Taille de table** (petite, grande)
+  - **Auteurs**
+- Vous pouvez modifier ou supprimer un jeu en cliquant dessus puis le bouton correspondant
+
+### 13. Gérer les réservants
+
+**Où aller** : Cliquez sur "Réservants" dans la Sidebar
+
+**Créer un réservant** :
+- Vous donnez le **nom** du réservant (ex: "Association des Jeux", "Distributeur XYZ")
+- Vous choisissez le **type**:
+  - **Éditeur** : Une maison d'édition
+  - **Distributeur** : Un distributeur de jeux
+  - **Association** : Une association de joueurs
+  - **Autre** : Autre type
+- Si c'est un éditeur, vous pouvez le **lier à un éditeur existant** (optionnel)
+- Vous pouvez ajouter des **contacts**:
+  - **Nom** du contact
+  - **Email**
+  - **Téléphone**
+  - **Rôle / fonction**
+
+### Données initiales (CSV import)
+
+À la première installation, la base de données est remplie avec les données provenant des fichiers CSV:
+- **editeur.csv** → Liste des éditeurs
+- **jeu.csv** → Liste des jeux avec leurs propriétés
+- **typeJeu.csv** → Types de jeux disponibles
+
+Ces données sont importées automatiquement via le script **02_seed.sql** lors de l'initialisation Docker. Cela vous permet de commencer avec un catalogue de jeux et d'éditeurs pré-existants.
+
+### 14. Vue publique (pour les visiteurs et bénévoles)
+
+**Où aller** : Cliquez sur "Vues publiques" dans la Sidebar
+
+**Qu'on voit** :
+- Les jeux du **festival courant** avec tous leurs détails:
+  - Nom, type, âges recommandés, nombre de joueurs
+  - Durée, éditeur, auteurs
+  - Zone du plan (où le jeu est placé)
+- Les **éditeurs** du festival courant
+- Vous pouvez basculer entre la vue "Jeux" et la vue "Éditeurs"
+
+**Qui peut voir** : tous les roles , mais puisque les autres roles sauf visiteurs et benevoles peuvent voir les festivals et festival courant dasn festivals , on mets le noms du festival courant et quelques infos limitées pour que les visiteurs et benevoles voient 
+
+### 15. Les rôles et permissions
+
+**Admin** : Peut tout faire
+- Créer et gérer festivals, zones tarifaires, réservations
+- Générer toutes les factures
+- Voir toutes les réservations
+- Gérer les utilisateurs
+- Gérer les jeux et éditeurs
+- Accéder à la vue publique
+
+**Super Organisateur** : Presque Admin (sauf gestion des utilisateurs)
+- Créer et gérer festivals, zones tarifaires, réservations
+- Générer toutes les factures
+- Voir toutes les réservations
+- Gérer les jeux et éditeurs
+- Accéder à la vue publique
+- **Ne peut pas** : Gérer les utilisateurs (création, modification, suppression)
+
+**Organisateur** : Peut gérer son festival
+- Créer zones tarifaires
+- Créer et gérer ses réservations
+- Générer ses factures
+- Voir uniquement ses réservations
+- Accéder à la vue publique
+
+**Bénévole et visiteurs** : Peut regarder
+- Voir le festival courant
+- Voir le plan du festival (zones et jeux placés)
+- Voir la vue publique (jeux et éditeurs)
+- Rien créer
+
+**user** : 
+- attends la validation de son compte par l'admin donc il ne voit rien 
+---
+
