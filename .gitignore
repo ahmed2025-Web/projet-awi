@@ -15,7 +15,7 @@ dist/
 .env
 .env.*
 
-# Certificats de dev (SSL localhost) — à régénérer en local
+# Certificats HTTPS localhost — générés en local (voir le README). On ne versionne pas de clés privées.
 certs/
 *.pem
 

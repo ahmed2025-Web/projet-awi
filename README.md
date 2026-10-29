@@ -14,12 +14,28 @@ Une plateforme complète pour organiser et gérer un festival de jeux de sociét
 
 ### Étapes pour démarrer
 
-**1. Préparer le projet**
+**1. Récupérer le projet**
 ```bash
-git checkout ahmed
+git clone https://github.com/ahmed2025-Web/projet-awi.git
+cd projet-awi
+```
+Le projet complet est sur la branche **`main`** (branche par défaut, rien d'autre à faire).
+
+> Les dépendances (`node_modules`) sont installées automatiquement par Docker (`npm ci`) — rien à installer à la main.
+
+**2. Générer les certificats HTTPS localhost** (une seule fois)
+
+Les certificats ne sont pas versionnés (pas de clés privées dans le dépôt). Générez-les en local :
+```bash
+for d in backend/certs frontend/certs; do
+  mkdir -p "$d"
+  openssl req -x509 -newkey rsa:2048 -nodes \
+    -keyout "$d/localhost-key.pem" -out "$d/localhost.pem" \
+    -days 825 -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost"
+done
 ```
 
-**2. Lancer l'application**
+**3. Lancer l'application**
 ```bash
 docker compose -f docker-compose.dev.yml down -v
 
@@ -44,6 +60,29 @@ Utilisez ces identifiants par défaut :
 Login: admin
 Mot de passe: admin
 ```
+
+---
+
+## Lancer sans Docker (optionnel)
+
+`node_modules/` n'est pas versionné : si vous lancez l'app **sans Docker**, installez d'abord les dépendances.
+
+**Backend** (nécessite une base PostgreSQL ; renseignez `DATABASE_URL`) :
+```bash
+cd backend
+npm install
+npm run build
+npm start
+```
+
+**Frontend** :
+```bash
+cd frontend
+npm install
+npm run build        # ou, pour le dev : npx ng serve
+```
+
+Générez d'abord les certificats HTTPS localhost (voir l'étape 2 ci-dessus).
 
 ---
 
